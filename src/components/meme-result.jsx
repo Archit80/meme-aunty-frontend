@@ -7,19 +7,8 @@ export default function MemeResult({ meme, onMakeAnother }) {
     downloadFile(meme.meme_url)
   }
 
-  
 
-  const handleShare = async () => {
-    await shareContent({
-      title: "Check out this meme!",
-      text: meme.caption,
-      url: window.location.href,
-    })
-  }
-
-  const handleTwitterShare = () => {
-    shareOnTwitter(meme.caption)
-  }
+ 
 
   return (
     <div className="space-y-6">
@@ -53,29 +42,7 @@ export default function MemeResult({ meme, onMakeAnother }) {
         </button>
       </div>
 
-      {/* Social Sharing */}
-      <div className="bg-white rounded-2xl p-6 border border-purple-100 shadow-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Share your creation</h3>
-        <div className="flex justify-center gap-3">
-          <button
-            onClick={handleTwitterShare}
-            className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition-colors"
-          >
-            <Twitter className="w-4 h-4" />
-            Twitter
-          </button>
-
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl transition-colors"
-          >
-            <Share2 className="w-4 h-4" />
-            Share
-          </button>
-        </div>
-      </div>
-
-      {/* Stats */}
+  
       <div className="text-center text-sm text-gray-500">
         <p>🎉 Another masterpiece created by Meme Aunty!</p>
       </div>
