@@ -1,5 +1,5 @@
-import { Download, RotateCcw, Share2, Twitter } from "lucide-react"
-import { downloadFile,shareContent, shareOnTwitter } from "@/utils/fileUtils"
+import { Download, RotateCcw } from "lucide-react"
+import { downloadFile } from "@/utils/fileUtils"
 
 export default function MemeResult({ meme, onMakeAnother }) {
   
