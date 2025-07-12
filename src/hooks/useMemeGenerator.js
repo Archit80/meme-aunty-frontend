@@ -24,7 +24,7 @@ export function useMemeGenerator() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch("http://localhost:8000/whoami/");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/whoami/`);
         if (response.ok) {
           const data = await response.json();
           setUserName(data.name);
