@@ -28,7 +28,7 @@ export const VIBES = [
 },
 {
     id: "savage",
-    label: "Savage",
+    label: "Brutal",
     emoji: "💀",
     description: "No mercy mode",
     value: 100,
