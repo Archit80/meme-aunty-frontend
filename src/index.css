@@ -1,0 +1,10 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Sigmar&display=swa p'); */
+@import url('https://fonts.googleapis.com/css2?family=Preahvihear&family=Sigmar&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-heading: "Sigmar", sans-serif;
+  --font-sans: "Balsamiq Sans", "system-ui", sans-serif;
+}
