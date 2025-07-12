@@ -1,14 +1,10 @@
-/**
- * Generate a basic device fingerprint using non-invasive browser properties
- * This helps prevent easy abuse while respecting user privacy
- */
 
 function generateBasicFingerprint() {
   const components = [
-    // Screen resolution (most stable identifier)
+    // Screen resolution 
     `screen:${screen.width}x${screen.height}x${screen.colorDepth}`,
     
-    // Timezone (reasonably stable)
+    // Timezone  
     `tz:${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
     
     // User agent (browser + OS info)
@@ -24,7 +20,7 @@ function generateBasicFingerprint() {
   // Create a hash of all components
   const fingerprintString = components.join('|');
   
-  // Simple hash function (not cryptographic, just for fingerprinting)
+  // Simple hash function 
   let hash = 0;
   for (let i = 0; i < fingerprintString.length; i++) {
     const char = fingerprintString.charCodeAt(i);
@@ -48,8 +44,8 @@ function getDeviceToken() {
     localStorage.setItem(STORAGE_KEY, storedToken);
   }
   
-  // Combine fingerprint + stored token for stronger identification
-  // This way, even if someone clears localStorage, the fingerprint helps identify them
+  // Combine fingerprint + stored token for identification
+  // even if user clears localStorage, the fingerprint helps identify them
   const combinedIdentifier = `${fingerprint}-${storedToken.slice(0, 8)}`;
   
   return combinedIdentifier;

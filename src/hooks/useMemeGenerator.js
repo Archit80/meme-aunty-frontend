@@ -26,10 +26,6 @@ export function useMemeGenerator() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        console.log("=== STARTING USER INFO FETCH ===");
-        console.log("Device token:", deviceToken);
-        console.log("API URL:", import.meta.env.VITE_API_URL);
-        
         const response = await fetch(`${import.meta.env.VITE_API_URL}/whoami/`, {
           method: 'POST',
           headers: {
@@ -37,21 +33,15 @@ export function useMemeGenerator() {
           },
           body: JSON.stringify({ device_token: deviceToken })
         });
-        console.log("Response status:", response.status);
         if (response.ok) {
           const data = await response.json();
-          console.log("User info received:", data);
           setUserName(data.name);
           setCreditsLeft(data.credits_left);
-          console.log("State updated - userName:", data.name, "credits:", data.credits_left);
-        } else {
-          console.error("API response not ok:", response.status, response.statusText);
         }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
         // Keep default values on error
       } finally {
-        console.log("Setting isLoadingUser to false");
         setIsLoadingUser(false);
       }
     };
@@ -98,7 +88,6 @@ export function useMemeGenerator() {
     try {
       // Use the meme service for generation with device token
       const result = await memeService.generateMeme(selectedFile, selectedVibe, deviceToken);
-      console.log("recieved data:", result);
       setGeneratedMeme(result);
       setCreditsLeft((prev) => prev - 1);
       setCurrentState(STATES.RESULT);
@@ -128,18 +117,13 @@ export function useMemeGenerator() {
   };
 
   const captureImage = () => {
-    console.log("captureImage called");
-    console.log("webcamRef.current:", webcamRef.current);
-    
     if (!webcamRef.current) {
-      console.error("Webcam ref is null!");
       setError("Camera not ready. Please try again.");
       return;
     }
 
     try {
       const imageSrc = webcamRef.current.getScreenshot();
-      console.log("Screenshot captured:", imageSrc ? "Success" : "Failed");
       
       if (imageSrc) {
         setCapturedImage(imageSrc);
@@ -156,17 +140,13 @@ export function useMemeGenerator() {
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "image/jpeg" });
         const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
-
-        console.log("File created:", file);
         
         // Use the existing handleFileSelect logic
         handleFileSelect(file);
       } else {
-        console.error("Failed to capture screenshot");
         setError("Failed to capture image. Please try again.");
       }
     } catch (error) {
-      console.error("Error in captureImage:", error);
       setError("Error capturing image: " + error.message);
     }
   };
