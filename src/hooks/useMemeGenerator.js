@@ -4,6 +4,7 @@ import { VIBES } from "@/constants/vibes";
 import { getStepFromState } from "@/utils/stateUtils";
 import { memeService } from "@/services/memeService";
 import { validateFile } from "@/utils/fileUtils";
+import { getDeviceToken } from "@/utils/deviceFingerprint";
 // import Webcam from "react-webcam";
 
 export function useMemeGenerator() {
@@ -17,6 +18,7 @@ export function useMemeGenerator() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [userName, setUserName] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [deviceToken] = useState(() => getDeviceToken());
 
   const webcamRef = useRef(null);
 
@@ -24,22 +26,38 @@ export function useMemeGenerator() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/whoami/`);
+        console.log("=== STARTING USER INFO FETCH ===");
+        console.log("Device token:", deviceToken);
+        console.log("API URL:", import.meta.env.VITE_API_URL);
+        
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/whoami/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ device_token: deviceToken })
+        });
+        console.log("Response status:", response.status);
         if (response.ok) {
           const data = await response.json();
+          console.log("User info received:", data);
           setUserName(data.name);
           setCreditsLeft(data.credits_left);
+          console.log("State updated - userName:", data.name, "credits:", data.credits_left);
+        } else {
+          console.error("API response not ok:", response.status, response.statusText);
         }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
         // Keep default values on error
       } finally {
+        console.log("Setting isLoadingUser to false");
         setIsLoadingUser(false);
       }
     };
 
     fetchUserInfo();
-  }, []);
+  }, [deviceToken]);
 
   // Monitor credits and automatically switch to NO_CREDITS state
   useEffect(() => {
@@ -78,8 +96,8 @@ export function useMemeGenerator() {
     setError(null);
 
     try {
-      // Use the meme service for generation
-      const result = await memeService.generateMeme(selectedFile, selectedVibe);
+      // Use the meme service for generation with device token
+      const result = await memeService.generateMeme(selectedFile, selectedVibe, deviceToken);
       console.log("recieved data:", result);
       setGeneratedMeme(result);
       setCreditsLeft((prev) => prev - 1);

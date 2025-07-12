@@ -7,16 +7,19 @@ class MemeService {
    * Generate a meme from image and vibe
    * @param {File} file - Image file
    * @param {string} vibe - Selected vibe
+   * @param {string} deviceToken - Device token for identification
    * @returns {Promise<Object>} - Generated meme data
    */
 
-  async generateMeme(file, vibe) {
+  async generateMeme(file, vibe, deviceToken) {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('vibe', vibe)
+    formData.append('device_token', deviceToken)
     console.log("Sending data to server:", {
       file: file.name,
-      vibe: vibe
+      vibe: vibe,
+      device_token: deviceToken
     });
     try {
       const response = await fetch(`${this.baseUrl}/generate-meme/`, {
