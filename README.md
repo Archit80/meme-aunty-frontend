@@ -1,69 +1,112 @@
-# 🎭 Meme Aunty Frontend - Code Architecture Guide
+# Meme Aunty Frontend - Code Architecture
 
-## 📋 Overview
-A React app that creates AI-powered memes with device fingerprinting and Indian aunty vibes.
+## Meme Aunty
+Your AI-Powered Indian Aunty Meme Generator 🚀
 
-## 🏗️ Project Structure
+Meme Aunty is a full-stack meme generation platform that creates hilarious, culturally authentic Indian aunty memes using Google Gemini AI — like having your favorite aunty roast you, but in meme format.
+
+## 🔥 Features
+
+**Smart Device Fingerprinting**
+- Browser-based identification using screen, timezone, user agent, and language
+- Rate limiting that works across incognito/multiple browsers from same device
+- Persistent user identity with fun codenames (e.g., "clever-mongoose")
+
+**AI-Powered Meme Generation**
+- Google Gemini AI integration for contextual, image-aware captions
+- Three distinct vibes: Wholesome, Spicy, and Savage aunty personalities
+- Upload your own images or capture photos directly with webcam
+
+**Modern UI/UX**
+- Responsive, mobile-first design with professional camera overlay
+- Three-step workflow: Upload → Vibe Selection → Result
+- Real-time credit tracking and usage feedback
+- Seamless file handling with drag-and-drop support
+
+**Rate Limiting & Fair Usage**
+- 10 memes per device per day to prevent abuse
+- Smart fingerprinting prevents rate limit bypassing
+- Visual credit counter and quota management
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Frontend | React 18, Vite, JSX |
+| Styling | Tailwind CSS, Custom Components |
+| State | Custom Hooks Pattern (useMemeGenerator) |
+| API | Axios, FormData handling |
+| Security | Device Fingerprinting, localStorage persistence |
+| Camera | react-webcam |
+| File Handling | File API, Image validation |
+
+## 📁 Project Structure
 ```
-src/
-├── hooks/useMemeGenerator.js  # Main business logic
-├── services/memeService.js    # API communication
-├── utils/deviceFingerprint.js # Device identification
-├── components/                # UI components
-├── constants/app.js           # App configuration
-└── App.jsx                    # Main container
+Client/
+├── src/
+│   ├── hooks/                  → Business logic (useMemeGenerator)
+│   ├── services/               → API communication layer
+│   ├── utils/                  → Device fingerprinting utilities
+│   ├── components/
+│   │   ├── steps/             → Workflow components (Upload, Vibe, Result)
+│   │   └── ui/                → Reusable UI components
+│   ├── constants/             → App configuration and state definitions
+│   └── assets/                → Static images and icons
+├── public/                    → Aunty logos and static assets
+└── docs/                      → API and component documentation
 ```
 
+ 
 ## 🔄 Application Flow
 
 ```mermaid
 graph TD
-    A[App Load] --> B[useMemeGenerator: fetchUserInfo()]
-    B --> C[deviceFingerprint: getDeviceToken()]
-    C --> D[API: /whoami/]
-    D --> E[Set Username + Credits]
+    A[App Load] --> B[fetchUserInfo]
+    B --> C[getDeviceToken]
+    C --> D[API whoami]
+    D --> E[Set User Data]
     
-    F[User Uploads File] --> G[useMemeGenerator: handleFileSelect()]
-    G --> H[State: UPLOAD → VIBE]
+    F[Upload File] --> G[handleFileSelect]
+    G --> H[UPLOAD to VIBE]
     
-    I[User Selects Vibe] --> J[useMemeGenerator: handleGenerate()]
-    J --> K[memeService: generateMeme()]
-    K --> L[API: /generate-meme/]
-    L --> M[State: VIBE → RESULT]
+    I[Select Vibe] --> J[handleGenerate]
+    J --> K[generateMeme API]
+    K --> L[VIBE to RESULT]
     
-    N[User Clicks Camera] --> O[UploadStep: captureImage()]
-    O --> P[Webcam: getScreenshot()]
-    P --> Q[Convert to File]
-    Q --> G
+    M[Camera Click] --> N[captureImage]
+    N --> O[Get Screenshot]
+    O --> P[Convert to File]
+    P --> G
 ```
 
 ## 📂 Module Functions
 
-### **hooks/useMemeGenerator.js** - Business Logic
-- `fetchUserInfo()` - Gets user identity and credits from the backend on app load.
-- `handleFileSelect()` - Validates and processes uploaded or captured image files.
-- `handleGenerate()` - Orchestrates the meme generation API call and handles state transitions (loading, result, error).
-- `captureImage()` - Handles the webcam photo capture process.
-- `handleMakeAnother()` - Resets the application state to allow for creating a new meme.
+### **hooks/useMemeGenerator.js** - Core Business Logic
+- `fetchUserInfo()` - Calls `/whoami/` endpoint with device token to get username and remaining credits
+- `handleFileSelect()` - Validates file size/type, creates preview URL, transitions from UPLOAD to VIBE state
+- `handleGenerate()` - Creates FormData with file + vibe + device token, calls backend API, handles loading states
+- `captureImage()` - Uses webcam ref to take screenshot, converts canvas to blob, creates File object
+- `handleMakeAnother()` - Resets all state (file, vibe, result) and returns to UPLOAD state for new meme
 
-### **utils/deviceFingerprint.js** - Security
-- `generateBasicFingerprint()` - Creates a unique hash from browser properties (screen, timezone, user agent, language).
-- `getDeviceToken()` - Combines the browser fingerprint with a persistent `localStorage` token for robust device identification.
+### **utils/deviceFingerprint.js** - Browser Fingerprinting
+- `generateBasicFingerprint()` - Hashes screen resolution + timezone + userAgent + language for device ID
+- `getDeviceToken()` - Combines browser fingerprint with localStorage UUID to create persistent identifier
+- Creates format: `"abc123def-uuid-from-localstorage"` for rate limiting across browser sessions
 
-### **services/memeService.js** - API Layer
-- `generateMeme()` - Sends the image file, selected vibe, and device token to the backend's `/generate-meme/` endpoint.
-- `fetchUserInfo()` - Calls the `/whoami/` endpoint to retrieve user data based on the device token.
-- Handles API response parsing and error management.
+### **services/memeService.js** - API Communication
+- `generateMeme()` - POST to `/generate-meme/` with FormData containing image, vibe, device_token
+- `fetchUserInfo()` - POST to `/whoami/` with device token to get user identity and quota status
+- Uses axios with proper error handling and response data extraction
 
-### **components/steps/** - UI Workflow
-- `UploadStep.jsx` - Manages file uploading and the webcam capture UI.
-- `VibeStep.jsx` - Allows the user to select a meme mood (wholesome, spicy, savage).
-- `ResultStep.jsx` - Displays the final generated meme and provides sharing options.
+### **components/steps/** - UI State Components
+- `UploadStep.jsx` - File drag-drop zone, webcam modal with live preview, file validation UI
+- `VibeStep.jsx` - Three vibe buttons (wholesome/spicy/savage), generate button with credit check
+- `ResultStep.jsx` - Displays generated meme image, caption text, share buttons, "make another" action
 
-### **constants/app.js** - Configuration
-- `STATES` - Defines the application's workflow states (`UPLOAD`, `VIBE`, `RESULT`, `NO_CREDITS`).
-- `STATE_CONFIGS` - Contains UI messages, styles, and configurations for each application state.
-- `APP_CONFIG` - Holds global settings like file size limits and API URLs.
+### **constants/app.js** - State Management Config
+- `STATES` - Enum-like object defining workflow: `{UPLOAD: 'upload', VIBE: 'vibe', RESULT: 'result', NO_CREDITS: 'no_credits'}`
+- `STATE_CONFIGS` - Maps each state to UI text, button labels, progress indicators
+- `APP_CONFIG` - File size limits (10MB), allowed types (.jpg, .png, .gif), API endpoints
 
 ## 🎯 State Flow
 The application follows a simple, linear state progression:
@@ -73,11 +116,6 @@ UPLOAD → VIBE → RESULT → UPLOAD (loop)
 NO_CREDITS (if quota is exceeded at any point)
 ```
 
-## 🔒 Security & UI Features
-- **Device Fingerprinting**: Creates a consistent identifier across regular and incognito browser sessions to enforce rate limits fairly.
-- **Token Persistence**: Combines the fingerprint with a `localStorage` token to reliably identify returning users.
-- **Fullscreen Camera**: Provides a professional camera overlay with a clear capture button for a seamless experience.
-- **Responsive Design**: The UI is a fully responsive and works smoothly on both mobile and desktop devices.
 
 ## 🚀 Setup
 
