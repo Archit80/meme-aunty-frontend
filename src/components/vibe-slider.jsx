@@ -58,7 +58,10 @@ export default function VibeSlider({
             max="100"
             value={sliderValue}
             onChange={handleSliderChange}
-            className="vibe-slider w-full h-2 rounded-lg outline-none hover:cursor-pointer"
+            className="w-full h-2 rounded-full outline-none hover:cursor-pointer appearance-none"
+               style={{
+              background: 'linear-gradient(to right, #3b82f6, #eab308, #ef4444)',
+            }}
           />
 
           {/* Snap Points */}
@@ -102,13 +105,7 @@ export default function VibeSlider({
             </div>
           </div>
         </div>
-        {/* Vibe Preview */}
-        {/* <div className="text-center lg:text-left mb-8">
-          <div className="text-sm text-gray-500 mb-2">Preview:</div>
-          <div className="text-gray-700 italic">
-            "{getVibePreview(selectedVibe)}"
-          </div>
-        </div> */}
+    
       </div>
 
       {/* Generate Button */}

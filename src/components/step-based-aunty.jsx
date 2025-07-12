@@ -2,13 +2,13 @@ import { STATE_CONFIGS } from "@/constants/app";
 
 export default function StepBasedAunty({ currentState, creditsLeft }) {
   const config = STATE_CONFIGS[currentState];
-  
+
   // Determine which image to show based on current state
   const getAuntyImage = () => {
     if (creditsLeft <= 0) {
       return "/no-credits.png"; // Image for no credits left state
     } else if (currentState === "result") {
-      return "/final-nobg.png"; // Special celebration image for result state
+      return "/final-nobg.png"; //   celebration image for result state
     }
     return "/main-aunty.png"; // Default image for upload and vibe states
   };
